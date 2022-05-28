@@ -1,0 +1,189 @@
+﻿@model EInventory.Models.TaskModels
+
+@{
+    ViewBag.Title = "Add Task";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- InputMask -->
+<script src="~/Scripts/plugins/input-mask/jquery.inputmask.js"></script>
+<script src="~/Scripts/plugins/input-mask/jquery.inputmask.date.extensions.js"></script>
+<script src="~/Scripts/plugins/input-mask/jquery.inputmask.extensions.js"></script>
+<!-- Select2 -->
+<script src="~/Scripts/plugins/select2/select2.full.min.js"></script>
+
+<script type="text/javascript" src="~/Content/grid.locale-en.js"></script>
+<script type="text/javascript" src="~/Content/jquery.jqGrid.min.js"></script>
+<link rel=" stylesheet" type="text/css" href="~/Content/jquery-ui_bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/ui.jqgrid.css" />
+
+
+<script type="text/javascript" src="~/Scripts/plugins/jQueryUI/jquery-ui.min.js"></script>
+
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title" id="myModalLabel">Add Follow UP</h4>
+</div>
+
+
+@using (Html.BeginForm("AddTask", "Task", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.TaskID)
+    @Html.HiddenFor(model => model.TranDispID)
+    @Html.HiddenFor(model => model.TranTypeID)
+    @Html.HiddenFor(model => model.refTransID)
+
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-xs-12">
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IsTaksCompleted, new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-10">
+                        @Html.CheckBoxFor(model => model.IsTaksCompleted, new { @class = "checkbox" })
+                        @Html.ValidationMessageFor(model => model.IsTaksCompleted, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Task List", new { @class = "col-sm-2 control-label" })
+                    <div id="myDiv" class="col-sm-10">
+
+                        <table id="grid" cellpadding="0" cellspacing="0"></table>
+                        <div id="pager" name="pager" style="text-align: center;">
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <input type="submit" class="btn btn-primary" value="Save changes" />
+    </div>
+
+}
+
+<style>
+    .ui-datepicker .ui-widget-content {
+        background: #999 none;
+    }
+</style>
+
+<script>
+    $(function () {
+        //Initialize Select2 Elements
+        $(".select2").select2();
+
+        //Datemask dd/mm/yyyy
+        $("#datemask").inputmask("dd/mm/yyyy", { "placeholder": "dd/mm/yyyy" });
+
+        //Money Euro
+
+        $("[data-mask]").inputmask();
+
+    });
+
+
+
+
+    initDateEdit = function (elem) {
+        setTimeout(function () {
+            $(elem).datepicker({
+                dateFormat: "dd-M-yy",
+                minDate: 0, // 0 days offset = today
+                autoSize: true,
+                //showOn: "button", // it dosn't work in searching dialog
+                changeYear: true,
+                changeMonth: true,
+                showButtonPanel: true,
+                showWeek: true
+            });
+        }, 100);
+    }
+
+
+    var lastsel;
+    $(function (itemData) {
+
+        $("#grid").jqGrid({
+            colNames: ['Remarks', 'NextTaskDueDate', 'ID'],
+            colModel: [
+                            //{
+                            //    name: 'refItemID_ItemMas', index: 'refItemID_ItemMas', sortable: false,
+                            //    align: 'left', width: '200',
+                            //    editable: true, edittype: 'text'
+
+                            //},
+                             {
+                                 name: 'Remarks', index: 'Remarks', width: "200", align: "left", editrules: { required: true },
+                                 editable: true, viewable: true, edittype: 'text'
+                             },
+                             {
+                                 name: 'NextTaskDueDate', index: 'NextTaskDueDate', sortable: false, editrules: { required: true },
+                                 align: 'left', width: '200',
+                                 formatter: "date", formatoptions: { newformat: "d-M-Y" }, editable: true,
+                                 editoptions: { dataInit: initDateEdit }
+
+                             },
+                             {
+                                 name: 'ID', index: 'ID', editable: false,
+                                 editrules: { edithidden: true }
+                             }
+
+            ],
+            pager: '#pager',
+            sortname: 'SrNo',
+            rowNum: 10,
+            rowList: [10, 20, 25],
+            sortorder: "",
+            height: 225,
+            viewrecords: true,
+            rownumbers: true,
+            caption: 'Check List',
+            imgpath: '/Content/jqGridCss/smoothness/images',
+            //width: 750,
+
+            url: "@Url.Action("GridDemoData", "Task")",
+            editurl: "@Url.Action("PerformCRUDAction", "Task")",
+            datatype: 'json',
+            mtype: 'GET',
+            onCellSelect: function (rowid, iCol, aData) {
+
+                if (rowid
+                    && rowid !== lastsel
+                    ) {
+
+                    if (lastsel)
+                        jQuery('#grid').jqGrid('restoreRow', lastsel);
+
+                    jQuery('#grid').jqGrid('editRow', rowid, true);
+                    lastsel = rowid;
+                }
+            }
+        }).hideCol('ID');
+
+        jQuery("#grid").jqGrid('navGrid', '#pager',
+        { edit: false, add: false, del: true, search: false, refresh: true, alertzIndex: 1110 },
+                {
+                    closeOnEscape: true, reloadAfterSubmit: true,
+                    closeAfterEdit: true, left: 600, top: 300, zIndex: 1200
+                },
+                {
+                    closeOnEscape: true, reloadAfterSubmit: true,
+                    closeAfterAdd: true, left: 450, top: 300, width: 520, zIndex: 1110
+                },
+                { closeOnEscape: true, reloadAfterSubmit: true, left: 450, top: 300, zIndex: 1110 });
+
+
+        jQuery("#grid").jqGrid('inlineNav', '#pager', { addParams: { position: "last" }, alertzIndex: 1100 });
+
+    });
+
+</script>

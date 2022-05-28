@@ -1,0 +1,98 @@
+﻿@model EInventory.Models.PartyAddress
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title" id="myModalLabel">Update Address Details</h4>
+</div>
+
+<div class="modal-body">
+    <div class="row">
+        <div class="col-xs-12">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.AddrID)
+                @Html.HiddenFor(model => model.SrNo)
+
+                <div class="box-body">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">@Html.LabelFor(model => model.refLocID_ParamVal)</label>
+                        @Html.DropDownListFor(model => model.refLocID_ParamVal, new SelectList(ViewBag.listPartyLocation, "ID", "ParamVal"), new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.refLocID_ParamVal, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">@Html.LabelFor(model => model.Addr)</label>
+                        @Html.TextBoxFor(model => model.Addr, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Addr, "", new { @class = "text-danger" })
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">@Html.LabelFor(model => model.City, new { @class = "col-sm-2 control-label" })</label>
+                        @Html.TextBoxFor(model => model.City, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                        @*</div>
+                            <div class="form-group">*@
+                        <label for="exampleInputPassword1">@Html.LabelFor(model => model.State, new { @class = "col-sm-2 control-label" })</label>
+                        @Html.TextBoxFor(model => model.State, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.State, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">@Html.LabelFor(model => model.Pincode, new { @class = "col-sm-2 control-label" })</label>
+                        @Html.TextBoxFor(model => model.Pincode, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Pincode, "", new { @class = "text-danger" })
+                        @*</div>
+                            <div class="form-group">*@
+                        <label for="exampleInputPassword1">@Html.LabelFor(model => model.Country, new { @class = "col-sm-2 control-label" })</label>
+                        @Html.TextBoxFor(model => model.Country, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Country, "", new { @class = "text-danger" })
+                    </div><div class="form-group">
+                        <label for="exampleInputPassword1">@Html.LabelFor(model => model.WorkContact1, new { @class = "col-sm-2 control-label" })</label>
+                        @Html.TextBoxFor(model => model.WorkContact1, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.WorkContact1, "", new { @class = "text-danger" })
+                        @*</div>
+                            <div class="form-group">*@
+                        <label for="exampleInputPassword1">@Html.LabelFor(model => model.WorkContact2, new { @class = "col-sm-2 control-label" })</label>
+                        @Html.TextBoxFor(model => model.WorkContact2, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.WorkContact2, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">@Html.LabelFor(model => model.ContactPerson1, new { @class = "col-sm-2 control-label" })</label>
+                        @Html.TextBoxFor(model => model.ContactPerson1, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ContactPerson1, "", new { @class = "text-danger" })
+                        @*</div>
+                            <div class="form-group">*@
+                        <label for="exampleInputPassword1">@Html.LabelFor(model => model.Mobile1, new { @class = "col-sm-2 control-label" })</label>
+                        @Html.TextBoxFor(model => model.Mobile1, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Mobile1, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">@Html.LabelFor(model => model.ContactPerson2, new { @class = "col-sm-2 control-label" })</label>
+                        @Html.TextBoxFor(model => model.ContactPerson2, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ContactPerson2, "", new { @class = "text-danger" })
+                        @*</div>
+                            <div class="form-group">*@
+                        <label for="exampleInputPassword1">@Html.LabelFor(model => model.Mobile2, new { @class = "col-sm-2 control-label" })</label>
+                        @Html.TextBoxFor(model => model.Mobile2, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Mobile2, "", new { @class = "text-danger" })
+                    </div>
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-primary" value="Save changes" />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+

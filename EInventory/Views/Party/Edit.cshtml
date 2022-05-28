@@ -1,0 +1,143 @@
+﻿@model EInventory.Models.PartyMaster
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Edit Existing Party</h3>
+                </div><!-- /.box-header -->
+                <!-- form start -->
+                @using (Html.BeginForm("Edit", "Party", FormMethod.Post, new { @class = "form-horizontal" }))
+                {
+                    <div class="box-body">
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.PartyID)
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PartyName, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(model => model.PartyName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.PartyName, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.EmailID, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(model => model.EmailID, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.EmailID, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            @Html.LabelFor(model => model.WebURL, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(model => model.WebURL, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.WebURL, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CategoryLinkage, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.ListBoxFor(model => model.CategoryLinkage, new MultiSelectList(ViewBag.listPartyCategory, "ID", "ParamVal"), new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.CategoryLinkage, "", new { @class = "text-danger" })
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-group ">
+                            <div class="">
+                                <div class="col-md-12" id="replacetarget">
+                                    @{ Html.RenderAction("PartyAddressList", "Party", new { conactList = Model.PartyAddressList }); }
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="box-footer">
+                        <a href="@Url.Action("Index")" class="btn btn-default">Cancel</a>
+                        <button type="submit" class="btn btn-info pull-right">Update</button>
+                    </div><!-- /.box-footer -->
+                }
+
+
+            </div><!-- /.box-body -->
+        </div><!-- /.box -->
+    </div><!-- /.col -->
+</section>
+<!-- modal placeholder-->
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+
+@*@using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <fieldset>
+            <legend>PartyMaster</legend>
+            @Html.HiddenFor(model => model.PartyID)
+            @Html.HiddenFor(model => model.refCompID_Company)
+
+
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PartyName)
+            </div>
+            <div class="editor-field">
+                @Html.EditorFor(model => model.PartyName)
+                @Html.ValidationMessageFor(model => model.PartyName)
+            </div>
+
+            <div class="editor-label">
+                @Html.LabelFor(model => model.EmailID)
+            </div>
+            <div class="editor-field">
+                @Html.EditorFor(model => model.EmailID)
+                @Html.ValidationMessageFor(model => model.EmailID)
+            </div>
+
+            <div class="editor-label">
+                @Html.LabelFor(model => model.WebURL)
+            </div>
+            <div class="editor-field">
+                @Html.EditorFor(model => model.WebURL)
+                @Html.ValidationMessageFor(model => model.WebURL)
+            </div>
+
+            <div class="editor-label">
+                @Html.LabelFor(model => model.CategoryLinkage)
+            </div>
+            <div class="editor-field">
+                @Html.ListBoxFor(model => model.CategoryLinkage, new MultiSelectList(Model.listPartyCategory, "ID", "ParamVal"))
+                @Html.ValidationMessageFor(model => model.CategoryLinkage)
+            </div>
+
+            <p>
+                <input type="submit" value="Save" />
+            </p>
+        </fieldset>
+    }
+
+    <div>
+        @Html.ActionLink("Back to List", "Index")
+    </div>*@

@@ -1,0 +1,508 @@
+﻿@model EInventory.Models.TransactionModels
+@using EInventory.Models
+<script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+@{
+    ViewBag.Title = "EditTransaction";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- InputMask -->
+<script src="~/Scripts/plugins/input-mask/jquery.inputmask.js"></script>
+<script src="~/Scripts/plugins/input-mask/jquery.inputmask.date.extensions.js"></script>
+<script src="~/Scripts/plugins/input-mask/jquery.inputmask.extensions.js"></script>
+
+
+<!-- The jqGrid client-side javascript -->
+
+
+<script type="text/javascript" src="~/Content/grid.locale-en.js"></script>
+<script type="text/javascript" src="~/Content/jquery.jqGrid.min.js"></script>
+<link rel=" stylesheet" type="text/css" href="~/Content/jquery-ui_bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/ui.jqgrid.css" />
+
+<script type="text/javascript" src="~/Scripts/plugins/jQueryUI/jquery-ui.min.js"></script>
+
+@*<link rel="stylesheet" type="text/css" href="http://www.trirand.net/aspnetmvc/Content/themes/ui.jqgrid.css" />*@
+@*<link rel=" stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/themes/redmond/jquery-ui.css" />*@
+
+
+@*<script type=" text />javascript" src="http://www.guriddo.net/demo/js/trirand/jquery.jqGrid.min.js"></script>*@
+
+@*<link rel=" stylesheet" type="text/css" href="http://www.guriddo.net/demo/css/trirand/ui.jqgrid-bootstrap.css" />*@
+
+
+
+
+
+
+<!-- Select2 -->
+<script src="~/Scripts/plugins/select2/select2.full.min.js"></script>
+
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Edit Purchase Order</h3>
+                </div><!-- /.box-header -->
+                <!-- form start -->
+                @*@using (Html.BeginForm("EditTransaction", "Transactions", FormMethod.Post, new { @class = "form-horizontal", id = "master" }))*@
+                @using (Ajax.BeginForm("EditTransaction", "Transactions", new AjaxOptions { HttpMethod = "post", OnBegin = "CallBegin", OnComplete = "CallComplete", OnSuccess = "CallSuccess", OnFailure = "CallFailure" }, new { @class = "form-horizontal", id = "master" }))
+                {
+                    <div class="box-body">
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.TranID)
+                        @Html.HiddenFor(model => model.refID_TransactionType)
+                        @Html.HiddenFor(model => model.TranDispID)
+
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.TranDispID, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.DisplayFor(model => model.TranDispID, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.TranDispID, "", new { @class = "text-danger" })
+                            </div>
+
+                            @Html.LabelFor(model => model.TransDate, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(model => model.TransDate, new { @class = "form-control", @data_inputmask = @Html.Raw(@"'alias' : 'dd/mm/yyyy' "), @data_mask = "" })
+                                @Html.ValidationMessageFor(model => model.TransDate, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+
+
+                        @if (Model.IsDisplayParty || Model.IsDisplayWithMaterial)
+                        {
+                            <div class="form-group">
+                                @if (Model.IsDisplayParty)
+                                {
+                                    @Html.LabelFor(model => model.refPartyID_EntityMas, new { @class = "col-sm-2 control-label" })
+                                    <div class="col-sm-4">
+                                        @Html.DropDownListFor(model => model.refPartyID_EntityMas, new SelectList(ViewBag.listParties, "PartyID", "PartyName"), new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.refPartyID_EntityMas, "", new { @class = "text-danger" })
+                                    </div>
+                                }
+                                @if (Model.IsDisplayWithMaterial)
+                                {
+                                    @Html.LabelFor(model => model.WithMaterial, new { @class = "col-sm-2 control-label" })
+                                    <div class="col-sm-4">
+                                        @Html.CheckBoxFor(model => model.WithMaterial, new { @class = "iCheck" })
+                                        @Html.ValidationMessageFor(model => model.WithMaterial, "", new { @class = "text-danger" })
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        @if (Model.IsDisplayExpDate || Model.IsAllowedFollowUp)
+                        {
+                            <div class="form-group">
+                                @if (Model.IsDisplayExpDate)
+                                {
+                                    @Html.LabelFor(model => model.ExpDueDate, new { @class = "col-sm-2 control-label" })
+                                    <div class="col-sm-4">
+                                        @Html.TextBoxFor(model => model.ExpDueDate, new { @class = "form-control", @data_inputmask = @Html.Raw(@"'alias' : 'dd/mm/yyyy' "), @data_mask = "" })
+                                        @Html.ValidationMessageFor(model => model.ExpDueDate, "", new { @class = "text-danger" })
+                                    </div>
+                                }
+                                @if (Model.IsAllowedFollowUp)
+                                {
+                                    @Html.LabelFor(model => model.IsFollowUP, new { @class = "col-sm-2 control-label" })
+                                    <div class="col-sm-4">
+                                        @Html.CheckBoxFor(model => model.IsFollowUP, new { @class = "checkbox", @onclick = "ChanageDiv(this);", @value = Model.IsFollowUP.ToString().ToLower() })
+                                        @Html.ValidationMessageFor(model => model.IsFollowUP, "", new { @class = "text-danger" })
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <div class="form-group">
+
+                            @Html.LabelFor(model => model.Remark, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-10">
+                                @Html.TextAreaFor(model => model.Remark, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.Label("Item List", new { @class = "col-sm-2 control-label" })
+                            <div id="myDiv" class="col-sm-10">
+                                @*<table id="grid" cellpadding="0" cellspacing="0"></table>*@
+                                <div id="ItemList">
+                                    @Html.Partial("_TransactionsDetailListPartial", @Model)
+                                    @*@{Html.RenderPartial("_TransactionsDetailListPartial", Model);}*@
+                                </div>
+                                @*<div id="pager" name="pager" style="text-align: center;">
+                                    </div>*@
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group" id="divCheckList">
+                        @Html.Label("Check List", new { @class = "col-sm-2 control-label" })
+                        <div id="myDivChecklist" class="col-sm-10">
+                            <table id="Checklistgrid" cellpadding="0" cellspacing="0"></table>
+                            <div id="Checklistpager" name="pager" style="text-align: center;">
+                            </div>
+
+                            @Html.ValidationMessageFor(model => model.listTasks)
+                        </div>
+
+                    </div>
+
+                    <div class="box-footer">
+                        <a href="@Url.Action("Index", new { ID = Model.refID_TransactionType })" class="btn btn-default">Cancel</a>
+                        @*<button type="submit" class="btn btn-info pull-right">Save</button>*@
+                        <input type="submit" name="btnSubmit" id="btnSubmit" value="Save" class="btn btn-info pull-right" onclick="return CallValidation();" />
+                    </div><!-- /.box-footer -->
+                }
+
+
+
+            </div><!-- /.box-body -->
+        </div><!-- /.box -->
+    </div><!-- /.col -->
+</section>
+
+<script>
+    $(function () {
+        //Initialize Select2 Elements
+        $(".select2").select2();
+
+        //Datemask dd/mm/yyyy
+        $("#datemask").inputmask("dd/mmm/yyyy", { "placeholder": "dd/mmm/yyyy" });
+
+        //Money Euro
+
+        $("[data-mask]").inputmask();
+
+        //$("#ItemList").html("");
+        //$("#ItemList").html(response);
+
+    });
+
+
+    @*function AddNewRow() {
+        debugger;
+        $.ajax({
+            type: "get",
+            dataType: "html",
+            cache: false,
+            url: '@Url.Action("SetDataInItemDetail","Transactions")',
+            data: { _ObjTransItem: '@Model.listTransactionItem' },
+            beforeSend: function () {
+
+            },
+            success: function (response) {
+                debugger;
+                $("#ItemList").html("");
+                $("#ItemList").html(response);
+            },
+            error: function () {
+                debugger;
+                $("#ItemList").html("");
+            }
+
+
+        });
+    }*@
+
+    function CallValidation() {
+
+        for (var i = 0 ; i <= $("#ItemListCount").val() ; i++) {
+            //debugger;
+
+            
+            var _Items = $("#listTransactionItem_" + i + "__refItemID_ItemMas");
+            if (_Items.val() == "" || _Items == undefined) {
+                toastr["warning"]('Item Can not left blank!');
+                $("#listTransactionItem_" + i + "__refItemID_ItemMas").focus();
+                return false;
+            }
+
+            //debugger;
+            var _Qty = $("#listTransactionItem_" + i + "__TranQty");
+            if (_Qty.val() == "" || _Qty == undefined || _Qty.val() <= 0) {
+                toastr["warning"]('Quantity Can not left blank!');
+                $("#listTransactionItem_" + i + "__TranQty").focus();
+                return false;
+            }
+
+            //debugger;
+            var _Rate = $("#listTransactionItem_" + i + "__TranRate");
+            if (_Rate.val() == "" || _Rate == undefined || _Rate.val() <= 0) {
+                toastr["warning"]('Rate Can not left blank!');
+                $("#listTransactionItem_" + i + "__TranRate").focus();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function SetIdBeforeCall(_RowNo) {
+        debugger;
+        if ($("#btnSubmit").val().toUpperCase() == "REMOVE") {
+            return $("#RowId").val(_RowNo);
+        }
+
+    }
+
+    function CallBegin() {
+        //debugger;
+        localStorage.setItem('btnName', $("#btnSubmit").val())
+
+    }
+    function CallSuccess(response) {
+        debugger;
+        if (response.btn != undefined) {
+            if (response.btn.toUpperCase() != "SAVE") {
+                $("#ItemList").html('');
+                $("#ItemList").html(response.result);
+            }
+        }
+        else
+        {
+            window.location.href = "/Transactions/Index%5C1";
+        }
+
+
+    }
+    function CallComplete() {
+        debugger;
+        var _Counter = $("#ItemListCount").val();
+        $("#listTransactionItem_" + _Counter + "__TranQty").focus();
+    }
+    function CallFailure() {
+        debugger;
+        $("#ItemList").html("");
+
+    }
+
+    var lastsel;
+    $(function (itemData) {
+
+        $("#grid").jqGrid({
+            colNames: ['Item', 'Qty', 'Rate', 'TIID'],
+            colModel: [
+                            //{
+                            //    name: 'refItemID_ItemMas', index: 'refItemID_ItemMas', sortable: false,
+                            //    align: 'left', width: '200',
+                            //    editable: true, edittype: 'text'
+
+                            //},
+                             {
+                                 name: 'refItemID_ItemMas', index: 'refItemID_ItemMas', width: "200", align: "left", editrules: { required: true },
+                                 editable: true, viewable: true, edittype: 'select', formatter: 'select',
+                                 editoptions: { value: "@Html.Action("GetRowItems")" }
+                             },
+                             {
+                                 name: 'TranQty', index: 'TranQty', sortable: false, editrules: { required: true },
+                                 align: 'left', width: '200',
+                                 editable: true, edittype: 'text',
+                                 formatter: 'currency', formatoptions: { decimalSeparator: ".", thousandsSeparator: ",", decimalPlaces: 2 },
+                                 editoptions: {
+                                     dataEvents: [
+                                             {
+                                                 type: 'keypress',
+                                                 fn: function (e) {
+                                                     return restrictChars(e, this, 2);
+                                                 }
+                                             }
+                                     ]
+                                 }
+                             },
+                            {
+                                name: 'TranRate', index: 'TranRate', sortable: false, editrules: { required: true },
+                                align: 'left', width: '200',
+                                editable: true, edittype: 'text',
+                                formatter: 'currency', formatoptions: { decimalSeparator: ".", thousandsSeparator: ",", decimalPlaces: 2 },
+                                editoptions: {
+                                    dataEvents: [
+                                            {
+                                                type: 'keypress',
+                                                fn: function (e) {
+                                                    return restrictChars(e, this, 2);
+                                                }
+                                            }
+                                    ]
+                                }
+                            },
+                            {
+                                name: 'TIID', index: 'TIID', editable: false,
+                                editrules: { edithidden: true }
+                            }
+
+            ],
+            pager: '#pager',
+            sortname: 'refItemID_ItemMas',
+            rowNum: 10,
+            rowList: [10, 20, 25],
+            sortorder: "",
+            height: 225,
+            viewrecords: true,
+            rownumbers: true,
+            caption: 'Item List',
+            imgpath: '/Content/jqGridCss/smoothness/images',
+            //width: 750,
+
+            url: "@Url.Action("GridDemoData", "Transactions")",
+            editurl: "@Url.Action("PerformCRUDAction", "Transactions")",
+            datatype: 'json',
+            mtype: 'GET',
+            onCellSelect: function (rowid, iCol, aData) {
+
+                if (rowid
+                    && rowid !== lastsel
+                    ) {
+
+                    if (lastsel)
+                        jQuery('#grid').jqGrid('restoreRow', lastsel);
+
+                    jQuery('#grid').jqGrid('editRow', rowid, true);
+                    lastsel = rowid;
+                }
+            }
+        }).hideCol('TIID');
+
+        jQuery("#grid").hideCol('ItemName');
+
+        jQuery("#grid").jqGrid('navGrid', '#pager',
+        { edit: false, add: false, del: true, search: false, refresh: true },
+                {
+                    closeOnEscape: true, reloadAfterSubmit: true,
+                    closeAfterEdit: true, left: 400, top: 300
+                },
+                {
+                    closeOnEscape: true, reloadAfterSubmit: true,
+                    closeAfterAdd: true, left: 450, top: 300, width: 520
+                },
+                { closeOnEscape: true, reloadAfterSubmit: true, left: 450, top: 300 });
+
+
+        jQuery("#grid").jqGrid('inlineNav', '#pager', { addParams: { position: "last" } });
+
+    });
+
+    $(document).ready(function () {
+
+        if ($("#IsFollowUP").val() == "true") {
+            $("#divCheckList").show();
+
+        }
+        else {
+            $("#divCheckList").hide();
+        }
+
+    });
+
+    function ChanageDiv(checkbox) {
+        //alert(checkbox.checked);
+        if (checkbox.checked)
+            $("#divCheckList").show();
+        else
+            $("#divCheckList").hide();
+    }
+
+    initDateEdit = function (elem) {
+        setTimeout(function () {
+            $(elem).datepicker({
+                dateFormat: "dd-M-yy",
+                minDate: 0, // 0 days offset = today
+                autoSize: true,
+                //showOn: "button", // it dosn't work in searching dialog
+                changeYear: true,
+                changeMonth: true,
+                showButtonPanel: true,
+                showWeek: true
+            });
+        }, 100);
+    }
+
+
+    var lastsel2;
+    $(function () {
+
+        $("#Checklistgrid").jqGrid({
+            colNames: ['Task Desc', 'Task Date', 'To User', 'ID'],
+            colModel: [
+                             {
+                                 name: 'TaskDesc', index: 'TaskDesc', width: "200", align: "left", editrules: { required: true },
+                                 editable: true, viewable: true, edittype: 'text'
+                             },
+                             {
+                                 name: 'TaskDate', index: 'TaskDate', sortable: false, editrules: { required: true },
+                                 align: 'left', width: '200',
+                                 formatter: "date", formatoptions: { newformat: "d-M-Y" }, editable: true,
+                                 editoptions: { dataInit: initDateEdit }
+
+                             },
+                            {
+                                name: 'refToUserID_UserMas', index: 'refToUserID_UserMas', width: "200", align: "left", editrules: { required: true },
+                                editable: true, viewable: true, edittype: 'select', formatter: 'select',
+                                editoptions: { value: "@Html.Action("GetUsers")" }
+                            },
+                             {
+                                 name: 'TaskID', index: 'TaskID', editable: false,
+                                 editrules: { edithidden: true }
+                             }
+
+            ],
+            pager: '#Checklistpager',
+            sortname: 'SrNo',
+            rowNum: 10,
+            rowList: [10, 20, 25],
+            sortorder: "",
+            height: 225,
+            viewrecords: true,
+            rownumbers: true,
+            caption: 'Check List',
+            imgpath: '/Content/jqGridCss/smoothness/images',
+            //width: 750,
+
+            url: "@Url.Action("GridDemoDataChecklist", "Transactions")",
+            editurl: "@Url.Action("PerformCRUDActionChecklist", "Transactions")",
+            datatype: 'json',
+            mtype: 'GET',
+            onCellSelect: function (rowid, iCol, aData) {
+
+                if (rowid
+                    && rowid !== lastsel2
+                    ) {
+
+                    if (lastsel2)
+                        jQuery('#Checklistgrid').jqGrid('restoreRow', lastsel2);
+
+                    jQuery('#Checklistgrid').jqGrid('editRow', rowid, true);
+                    lastsel2 = rowid;
+                }
+            }
+        }).hideCol('TaskID');
+
+        jQuery("#Checklistgrid").jqGrid('navGrid', '#Checklistpager',
+        { edit: false, add: false, del: true, search: false, refresh: true },
+                {
+                    closeOnEscape: true, reloadAfterSubmit: true,
+                    closeAfterEdit: true, left: 600, top: 300
+                },
+                {
+                    closeOnEscape: true, reloadAfterSubmit: true,
+                    closeAfterAdd: true, left: 450, top: 300, width: 520,
+                },
+                { closeOnEscape: true, reloadAfterSubmit: true, left: 450, top: 300 });
+
+
+        jQuery("#Checklistgrid").jqGrid('inlineNav', '#Checklistpager', { addParams: { position: "last" } });
+
+    });
+
+</script>
+@*{ss
+      text: 'Country', datafield: 'country_id', displayfield: 'Country', columntype: 'dropdownlist',
+      createeditor: function (row, value, editor) {
+            editor.jqxDropDownList({ source: countriesAdapter, displayMember: 'countryname', valueMember: 'id' });
+        }
+    }*@

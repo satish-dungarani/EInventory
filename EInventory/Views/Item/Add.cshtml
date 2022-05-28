@@ -1,0 +1,152 @@
+﻿@model EInventory.Models.ItemModels
+
+@{
+    ViewBag.Title = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Add New Item</h3>
+                </div><!-- /.box-header -->
+                <!-- form start -->
+                @using (Html.BeginForm("Add", "Item", FormMethod.Post, new { @class = "form-horizontal" }))
+                {
+                    <div class="box-body">
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.ItemID)
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.refCatID_CatMas, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(model => model.refCatID_CatMas, new SelectList(Model.listCategory, "CatID", "CategoryName"), new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.refCatID_CatMas, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ItemName, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(model => model.ItemName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ItemName, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ItemDesc, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-10">
+                                @Html.TextAreaFor(model => model.ItemDesc, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ItemDesc, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            @Html.LabelFor(model => model.ReOrdLevel, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(model => model.ReOrdLevel, new { @class = "form-control", @onKeyPress = "return restrictChars(event, this,2)" })
+                                @Html.ValidationMessageFor(model => model.ReOrdLevel, "", new { @class = "text-danger" })
+                            </div>
+
+
+                            @Html.LabelFor(model => model.MaxDeliveryDays, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(model => model.MaxDeliveryDays, new { @class = "form-control", @onKeyPress = "return restrictChars(event, this,0)" })
+                                @Html.ValidationMessageFor(model => model.MaxDeliveryDays, "", new { @class = "text-danger" })
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Size, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(model => model.Size, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Size, "", new { @class = "text-danger" })
+                            </div>
+
+
+                            @Html.LabelFor(model => model.Material, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(model => model.Material, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Material, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.refUOMID_ParamValue, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.DropDownListFor(model => model.refUOMID_ParamValue, new MultiSelectList(Model.listUOM, "ID", "ParamVal"), new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.refUOMID_ParamValue, "", new { @class = "text-danger" })
+                            </div>
+
+                            @Html.LabelFor(model => model.IsFinishedItem, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.CheckBoxFor(model => model.IsFinishedItem, new { @class = "checkbox", @onclick = "ChanageDiv(this);" })
+                                @Html.ValidationMessageFor(model => model.IsFinishedItem, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group ">
+                            <div class="">
+                                <div class="col-lg-offset-0 col-md-12" id="replacetarget1">
+                                    @{ Html.RenderAction("ItemVendorList", "Item", new { listItemVendor = Model.listItemVendor }); }
+                                </div>
+
+                                <div class="col-lg-offset-0 col-md-12" id="replacetarget2">
+                                    @{ Html.RenderAction("ConstumptionList", "Item", new { listFinalItemConsumption = Model.listFinalItemConsumption }); }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="box-footer">
+                        <a href="@Url.Action("Index")" class="btn btn-default">Cancel</a>
+                        <button type="submit" class="btn btn-info pull-right">Save</button>
+                    </div><!-- /.box-footer -->
+                }
+
+
+            </div><!-- /.box-body -->
+        </div><!-- /.box -->
+    </div><!-- /.col -->
+</section>
+<!-- modal placeholder-->
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    // A $( document ).ready() block.
+    $(document).ready(function () {
+        if ($("#IsFinishedItem").val()) {
+            $("#replacetarget2").show();
+
+        }
+        else {
+            $("#replacetarget2").hide();
+        }
+    });
+
+    function ChanageDiv(checkbox) {
+        //alert(checkbox.checked);
+        if (checkbox.checked)
+            $("#replacetarget2").show();
+        else
+            $("#replacetarget2").hide();
+    }
+</script>

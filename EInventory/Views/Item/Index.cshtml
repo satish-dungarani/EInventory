@@ -1,0 +1,122 @@
+﻿@model IEnumerable<EInventory.Models.ItemModels>
+
+@{
+    ViewBag.Title = "View";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+
+                    <h3 class="box-title">Item List</h3>
+                    <a href="@Url.Action("Add","Item")" cl class="btn btn-primary pull-right">Add</a>
+                </div><!-- /.box-header -->
+                @using (Html.BeginForm("Index", "Item", FormMethod.Post, new { @class = "form-horizontal" }))
+                {
+                    <div class="box-body">
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="box-body">
+                            <table id="example1" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Category
+                                        </th>
+                                        <th>
+                                            Item Name
+                                        </th>
+                                        <th>
+                                            Unit
+                                        </th>
+                                        <th> Re-Order (Level)</th>
+                                        <th> Max Del (days)</th>
+                                        <th>
+                                            Size
+                                        </th>
+                                        <th>
+                                            Material
+                                        </th>
+                                        <th>Final Item</th>
+                                        <th>
+                                            Action
+                                        </th>
+
+                                    </tr>
+                                </thead>
+
+                            </table>
+                        </div><!-- /.box-body -->
+                    </div><!-- /.box -->
+                }
+            </div><!-- /.col -->
+        </div>
+    </div>
+    <!-- /.row -->
+</section>
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+<script type="">
+
+
+
+
+    $(function () {
+        $('#example1').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "processing": true,
+            "serverSide": false,
+            "ajax": '@Url.Action("LoadItemAjaxHandler", "Item")',
+            "columns": [
+                            { "data": "CategoryName", "width": "20%" },
+                            { "data": "ItemName", "width": "20%" },
+                            { "data": "UnitName", "width": "20%" },
+                            { "data": "ReOrdLevel", "width": "20%" },
+                            { "data": "MaxDeliveryDays", "width": "20%" },
+                            { "data": "Size", "Width": "20%" },
+                            { "data": "Material", "Width": "20%" },
+                            { "data": "IsFinishedItem", "Width": "20%" }
+                           , {
+                               "aTargets": [7],
+                               "mData": null,
+                               "mRender": function (data, type, full) {
+                                   return '<table><tr><td><a href="/Item/Edit/' + full.ItemID + '" class="btn btn-block btn-info">Edit</a></td><td>&nbsp;&nbsp;</td><td><a class="btn btn-block btn-danger" data-modal="" href="/Item/Delete/' + full.ItemID + '"><span class="">Delete</span></a></td></tr></table>';
+                               }
+                           }
+            ],
+            "fnInitComplete": function () {
+                $(function () {
+                    $.ajaxSetup({ cache: false });
+
+                    $("a[data-modal]").on("click", function (e) {
+                        // hide dropdown if any (this is used wehen invoking modal from link in bootstrap dropdown )
+                        //$(e.target).closest('.btn-group').children('.dropdown-toggle').dropdown('toggle');
+
+                        $('#myModalContent').load(this.href, function () {
+                            $('#myModal').modal({
+                                /*backdrop: 'static',*/
+                                keyboard: true
+                            }, 'show');
+                        });
+                        return false;
+                    });
+                });
+            }
+
+        });
+    });
+
+</script>

@@ -1,0 +1,41 @@
+﻿@model EInventory.Models.TransactionChecklist
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title" id="myModalLabel">Edit Check List</h4>
+</div>
+<div class="modal-body">
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.ID)
+        @Html.HiddenFor(model => model.refTransID_TransSetup)
+
+        <div class="box-body">
+            <div class="form-group">
+                @Html.LabelFor(model => model.OrdNo)
+                @Html.TextBoxFor(model => model.OrdNo, new { @class = "form-control", @onKeyPress = "return restrictChars(event, this,0)" })
+                @Html.ValidationMessageFor(model => model.OrdNo, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ChklstDesc)
+                @Html.TextAreaFor(model => model.ChklstDesc, new { @class = "form-control", @style = "height: 230px;" })
+                @Html.ValidationMessageFor(model => model.ChklstDesc, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.FllowDays)
+                @Html.TextBoxFor(model => model.FllowDays, new { @class = "form-control", @onKeyPress = "return restrictChars(event, this,0)" })
+                @Html.ValidationMessageFor(model => model.FllowDays, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <input type="submit" class="btn btn-primary" value="Update changes" />
+            </div>
+        </div>
+    }
+</div>

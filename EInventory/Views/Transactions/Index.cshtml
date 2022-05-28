@@ -1,0 +1,148 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    @*<h3 class="box-title">Party List</h3>*@
+                    <a href="@Url.Action("AddTransaction", "Transactions", new { ID = TempData["TranTypeID"] })" class="btn btn-primary pull-right">Add</a>
+                </div>
+                <!-- /.box-header -->
+
+                <div class="box-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Trans. ID
+                                </th>
+                                <th>
+                                    Trans. Date
+                                </th>
+                                <th>
+                                    Party Name
+                                </th>
+                                <th> Remark</th>
+                                <th> With Material</th>
+                                <th> Exp. DueDate</th>
+                                <th> Total Qty</th>
+                                <th> Total Amount</th>
+                                <th>
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+
+                    </table>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+
+</section>
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog" style="width:1000px">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+<script type="">
+
+    $(function () {
+        $('#example1').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "processing": true,
+            "serverSide": false,
+            "ajax": '@Url.Action("LoadItemTransactionListAjaxHandler", "Transactions")',
+            "columns": [
+                            { "data": "TranDispID", "width": "20%" },
+                            { "data": "TransDate", "width": "20%" },
+                            { "data": "PartyName", "width": "20%" },
+                            { "data": "Remark", "width": "20%" },
+                            { "data": "WithMaterial", "width": "15%" },
+                            { "data": "ExpDueDate", "width": "20%" },
+                            { "data": "TotalQty", "width": "20%" },
+                            { "data": "TotalAmount", "width": "20%" },
+                            {
+                                "aTargets": [8],
+                                "mData": null,
+                                "mRender": function (data, type, full) {
+
+                                    var strTable = '<table><tr><td><a href="/Transactions/EditTransaction/' + full.TranID + '" class="btn btn-block btn-info">Edit</a></td><td>&nbsp;&nbsp;</td><td><a class="btn btn-block btn-danger" data-modal="" href="/Transactions/DeleteTransaction/' + full.TranID + '"><span class="">Delete</span></a></td>';
+
+                                    //if (full.FollowUPKey == 1)
+                                    //    strTable = strTable + '<td>&nbsp;&nbsp;</td><td><td><a href="/Task/AddTask/' + full.TranID + '"data-modal=""  class="btn btn-block btn-info">Add FollowUp</a></td>';
+
+                                    //else if (full.FollowUPKey == 2)
+                                    //    strTable = strTable + '<td>&nbsp;&nbsp;</td><td><td><a href="/Task/EditTask/' + full.TaskID + '"data-modal=""  class="btn btn-block btn-info">Edit FollowUp</a></td>';
+
+                                    //else if (full.FollowUPKey == 3)
+                                    //    strTable = strTable + '<td>&nbsp;&nbsp;</td><td><td><a href="/Task/ViewTask/' + full.TaskID + '"data-modal=""  class="btn btn-block btn-info">View FollowUp</a></td>';
+
+                                    strTable = strTable + '</tr></table>';
+
+
+                                    return strTable;
+                                }
+                            }
+            ],
+            "fnInitComplete": function () {
+                $(function () {
+                    $.ajaxSetup({ cache: false });
+
+                    $("a[data-modal]").on("click", function (e) {
+                        // hide dropdown if any (this is used wehen invoking modal from link in bootstrap dropdown )
+                        //$(e.target).closest('.btn-group').children('.dropdown-toggle').dropdown('toggle');
+
+                        $('#myModalContent').load(this.href, function () {
+                            $('#myModal').modal({
+                                /*backdrop: 'static',*/
+                                keyboard: true
+                            }, 'show');
+
+                            bindFormContact(this);
+                        });
+                        return false;
+                    });
+                });
+
+
+                function bindFormContact(dialog) {
+                    $('form', dialog).submit(function () {
+                        $.ajax({
+                            url: this.action,
+                            type: this.method,
+                            data: $(this).serialize(),
+                            success: function (result) {
+                                if (result.success) {
+
+                                    $('#myModal').modal('hide');
+                                    $(location).attr("href", result.url);
+                                    //$('#replacetarget1').load(result.url); //  Load data from the server and place the returned HTML into the matched element
+                                } else {
+                                    $('#myModalContent').html(result);
+                                    bindFormContact(dialog);
+                                }
+                            }
+                        });
+                        return false;
+                    });
+                }
+            }
+
+        });
+    });
+
+
+
+</script>

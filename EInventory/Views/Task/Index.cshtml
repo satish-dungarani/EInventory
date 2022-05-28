@@ -1,0 +1,129 @@
+﻿@model IEnumerable<EInventory.Models.TaskModels>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Follow UP List</h3>
+                </div>
+
+                <div class="box-body">
+
+
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Tran. ID
+                                </th>
+                                <th>
+                                    Tran. Type
+                                </th>
+                                <th>
+                                    Is Completed
+                                </th>
+                                <th>
+                                    Total FP
+                                </th>
+                                <th> Total Comp. FP </th>
+                                <th>
+                                    Action
+                                </th>
+
+                            </tr>
+                        </thead>
+
+                    </table>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+
+</section>
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog" style="width:780px">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+<script type="">
+
+    $(function () {
+        $('#example1').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "processing": true,
+            "serverSide": false,
+            "ajax": '@Url.Action("LoadTasksAjaxHandler", "Task")',
+            "columns": [
+                            { "data": "TranDispID", "width": "15%" },
+                            { "data": "TransactionType", "width": "15%" },
+                            { "data": "IsCompleted", "width": "15%" },
+                            { "data": "NoOfFollowUp", "width": "20%" },
+                            { "data": "CompletedFollowUp", "width": "20%" },
+                            {
+                                "aTargets": [4],
+                                "mData": null,
+                                "mRender": function (data, type, full) {
+                                    return '<table><tr><td><a href="/Task/EditTask/' + full.refTransID + '" class="btn btn-block btn-info"  >Edit</a></td><td>&nbsp;&nbsp;</td><td><a class="btn btn-block btn-danger" data-modal="" href="/Task/DeleteTask/' + full.refTransID + '"><span class="">Delete</span></a></td></tr></table>';
+                                }
+                            }
+            ],
+            "fnInitComplete": function () {
+
+                $(function () {
+                    $.ajaxSetup({ cache: false });
+
+                    $("a[data-modal]").on("click", function (e) {
+                        // hide dropdown if any (this is used wehen invoking modal from link in bootstrap dropdown )
+                        //$(e.target).closest('.btn-group').children('.dropdown-toggle').dropdown('toggle');
+
+                        $('#myModalContent').load(this.href, function () {
+                            $('#myModal').modal({
+                                /*backdrop: 'static',*/
+                                keyboard: true
+                            }, 'show');
+
+                            bindFormContact(this);
+                        });
+                        return false;
+                    });
+                });
+
+                function bindFormContact(dialog) {
+                    $('form', dialog).submit(function () {
+                        $.ajax({
+                            url: this.action,
+                            type: this.method,
+                            data: $(this).serialize(),
+                            success: function (result) {
+                                if (result.success) {
+                                    $('#myModal').modal('hide');
+                                    $(location).attr("href", result.url);
+                                    //$('#replacetarget1').load(result.url); //  Load data from the server and place the returned HTML into the matched element
+                                } else {
+                                    $('#myModalContent').html(result);
+                                    bindFormContact(dialog);
+                                }
+                            }
+                        });
+                        return false;
+                    });
+                }
+            }
+
+        });
+    });
+
+</script>

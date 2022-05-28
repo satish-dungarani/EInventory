@@ -1,0 +1,203 @@
+﻿@model EInventory.Models.TaskModels
+
+@{
+    ViewBag.Title = "Edit FollowUP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- InputMask -->
+<script src="~/Scripts/plugins/input-mask/jquery.inputmask.js"></script>
+<script src="~/Scripts/plugins/input-mask/jquery.inputmask.date.extensions.js"></script>
+<script src="~/Scripts/plugins/input-mask/jquery.inputmask.extensions.js"></script>
+<!-- Select2 -->
+<script src="~/Scripts/plugins/select2/select2.full.min.js"></script>
+
+<script type="text/javascript" src="~/Content/grid.locale-en.js"></script>
+<script type="text/javascript" src="~/Content/jquery.jqGrid.min.js"></script>
+<link rel=" stylesheet" type="text/css" href="~/Content/jquery-ui_bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/ui.jqgrid.css" />
+
+
+<script type="text/javascript" src="~/Scripts/plugins/jQueryUI/jquery-ui.min.js"></script>
+
+@using (Html.BeginForm("EditTask", "Task", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.refTransID)
+
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-xs-12">
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TranDispID, new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-10">
+                        @Html.DisplayFor(model => model.TranDispID, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TaskDate, new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-10">
+                        @Html.DisplayFor(model => model.TaskDate, new { @class = "form-control" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div id="myDiv" class="col-sm-12">
+
+                        <table id="grid" cellpadding="0" cellspacing="0"></table>
+                        <div id="pager" name="pager" style="text-align: center;">
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="box-footer">
+        <a href="@Url.Action("Index")" class="btn btn-default">Cancel</a>
+        <button type="submit" class="btn btn-info pull-right">Update</button>
+    </div><!-- /.box-footer -->
+
+}
+
+<style>
+    .ui-datepicker .ui-widget-content {
+        background: #999 none;
+    }
+</style>
+
+<script>
+    $(function () {
+        //Initialize Select2 Elements
+        $(".select2").select2();
+
+        //Datemask dd/mm/yyyy
+        $("#datemask").inputmask("dd/mm/yyyy", { "placeholder": "dd/mm/yyyy" });
+
+        //Money Euro
+
+        $("[data-mask]").inputmask();
+
+    });
+
+
+    initDateEdit = function (elem) {
+        setTimeout(function () {
+            $(elem).datepicker({
+                dateFormat: "dd-M-yy",
+                minDate: 0, // 0 days offset = today
+                autoSize: true,
+                //showOn: "button", // it dosn't work in searching dialog
+                changeYear: true,
+                changeMonth: true,
+                showButtonPanel: true,
+                showWeek: true
+            });
+        }, 100);
+    }
+
+
+    var lastsel;
+    $(function (itemData) {
+
+        $("#grid").jqGrid({
+            colNames: ['Task Date', 'Task Desc', 'User Name', 'Next Due Date', 'Remarks', 'Task Status', 'ID', 'TaskID'],
+            colModel: [
+                             {
+                                 name: 'TaskDate', index: 'TaskDate', width: "100", align: "left",
+                                 editable: false, viewable: true, edittype: 'text', formatter: "date", formatoptions: { newformat: "d-M-Y" }
+                             },
+                              {
+                                  name: 'TaskDesc', index: 'TaskDesc', width: "250", align: "left",
+                                  editable: false, viewable: true, edittype: 'text'
+                              },
+                               {
+                                   name: 'UserName', index: 'UserName', width: "200", align: "left",
+                                   editable: false, viewable: true, edittype: 'text'
+                               },
+                             {
+                                 name: 'NextTaskDueDate', index: 'NextTaskDueDate', sortable: false,
+                                 align: 'left', width: '100',
+                                 formatter: "date", formatoptions: { newformat: "d-M-Y" }, editable: true,
+                                 editoptions: { dataInit: initDateEdit }
+
+                             },
+                              {
+                                  name: 'Remarks', index: 'Remarks', width: "250", align: "left",
+                                  editable: true, viewable: true, edittype: 'text'
+                              },
+
+                               {
+                                   name: 'refTaskStatusID_ParamVal', index: 'refTaskStatusID_ParamVal', width: "100", align: "left", editrules: { required: true },
+                                   editable: true, viewable: true, edittype: 'select', formatter: 'select',
+                                   editoptions: { value: "@Html.Action("GetTaskStatus")" }
+                               },
+
+                             {
+                                 name: 'ID', index: 'ID', editable: false,
+                                 editrules: { edithidden: true }
+                             }
+                             ,
+
+                             {
+                                 name: 'TaskID', index: 'TaskID', editable: false,
+                                 editrules: { edithidden: true }
+                             }
+
+            ],
+            pager: '#pager',
+            sortname: 'SrNo',
+            rowNum: 10,
+            rowList: [10, 20, 25],
+            sortorder: "",
+            height: 225,
+            viewrecords: true,
+            rownumbers: true,
+            caption: 'FollowUP List',
+            imgpath: '/Content/jqGridCss/smoothness/images',
+            //width: 750,
+
+            url: "@Url.Action("GridDemoData", "Task")",
+            editurl: "@Url.Action("PerformCRUDAction", "Task")",
+            datatype: 'json',
+            mtype: 'GET',
+            onCellSelect: function (rowid, iCol, aData) {
+
+                if (rowid
+                    && rowid !== lastsel
+                    ) {
+
+                    if (lastsel)
+                        jQuery('#grid').jqGrid('restoreRow', lastsel);
+
+                    jQuery('#grid').jqGrid('editRow', rowid, true);
+                    lastsel = rowid;
+                }
+            }
+        }).hideCol('ID');
+
+        jQuery("#grid").hideCol('TaskID');
+
+        jQuery("#grid").jqGrid('navGrid', '#pager',
+        { edit: false, add: false, del: true, search: false, refresh: true },
+                {
+                    closeOnEscape: true, reloadAfterSubmit: true,
+                    closeAfterEdit: true, left: 600, top: 300
+                },
+                {
+                    closeOnEscape: true, reloadAfterSubmit: true,
+                    closeAfterAdd: true, left: 450, top: 300, width: 520
+                },
+                { closeOnEscape: true, reloadAfterSubmit: true, left: 450, top: 300 });
+
+
+        jQuery("#grid").jqGrid('inlineNav', '#pager', { addParams: { position: "last" }, add: false });
+
+    });
+
+</script>

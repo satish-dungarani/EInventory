@@ -1,0 +1,60 @@
+﻿@model EInventory.Models.TransactionItems
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <fieldset>
+        <legend>TransactionItems</legend>
+
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.refTranID_TranMas)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.refTranID_TranMas)
+            @Html.ValidationMessageFor(model => model.refTranID_TranMas, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.SrNo)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.SrNo)
+            @Html.ValidationMessageFor(model => model.SrNo, "", new { @class = "text-danger" })
+        </div>
+
+
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.refItemID_ItemMas)
+        </div>
+        <div class="editor-field">
+            @Html.(model => model.refItemID_ItemMas)
+            @Html.ValidationMessageFor(model => model.refItemID_ItemMas, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.TranQty)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.TranQty)
+            @Html.ValidationMessageFor(model => model.TranQty, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.TranRate)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.TranRate)
+            @Html.ValidationMessageFor(model => model.TranRate, "", new { @class = "text-danger" })
+        </div>
+
+
+        <p>
+            <input type="button" value="Create" />
+        </p>
+
+    </fieldset>
+}

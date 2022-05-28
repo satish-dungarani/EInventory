@@ -1,0 +1,156 @@
+﻿@model IEnumerable<EInventory.Models.CompanyAuthorityPerson>
+@using EInventory.Models
+@using EInventory.Helpers
+
+@{
+    Layout = null;
+}
+
+@*<table>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ParamVal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ContactPerson)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ParamVal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ContactPerson)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "EditAuthorityPerson", new { id = item.ID }) |
+                    @Html.ActionLink("Delete", "DeleteAuthorityPerson", new { id = item.ID })
+                </td>
+            </tr>
+        }
+
+    </table>*@
+
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Contact Details</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Contact Person</th>
+                        <th>Desigation</th>
+                        <th>
+                            @Html.NoEncodeActionLink("<span class='glyphicon glyphicon-plus'></span>", "Add", "AddContactPerson", "Company", htmlAttributes: new { id = "contact", data_modal = "", @class = "btn btn-primary pull-right" })
+                        </th>
+                    </tr>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ContactPerson)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ParamVal)
+                            </td>
+                            <td>
+                                <div class="pull-right">
+                                    @Html.NoEncodeActionLink("<span class='glyphicon glyphicon-pencil'></span>", "Edit", "EditContactPerson", "Company", routeValues: new { srNo = item.SrNo }, htmlAttributes: new { id = "contact", data_modal = "", @class = "btn btn-default" })
+                                    &nbsp;
+                                    @Html.NoEncodeActionLink("<span class='glyphicon glyphicon-trash'></span>", "Delete", "DeleteContactPerson", "Company", routeValues: new { srNo = item.SrNo }, htmlAttributes: new { id = "contact", data_modal = "", @class = "btn btn-danger" })
+
+                                </div>
+
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+            </div><!-- /.box-body -->
+
+        </div><!-- /.box -->
+        <!-- /.box -->
+    </div><!-- /.col -->
+</div>
+
+
+@*<div class="modal fade" id="AddSatutoryDetails" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" id="AddSatContentBody">
+            </div>
+        </div>
+    </div>*@
+
+@*<script>
+        var action = "@Url.Action("AddSatutory", "Company")";
+
+        $('#btnAddSatutory').click(function () {
+            var data = @Html.Raw(Json.Encode((List<ParamValue>)ViewBag.listSatutoryMaster))
+
+
+            $.ajax({
+                contentType: 'application/json',
+                type: 'GET',
+                url: action,
+                data: JSON.stringify({
+                    listSatutoryMaster: data
+                }),
+                success: function (data) {
+                    $("#AddSatContentBody").html(data);
+                },
+                error: function () {
+                    console.trace();
+                }
+            });
+
+        })
+    </script>*@
+
+<script type="text/javascript">
+
+
+    $(function () {
+        $.ajaxSetup({ cache: false });
+
+        $("a#contact").on("click", function (e) {
+            // hide dropdown if any (this is used wehen invoking modal from link in bootstrap dropdown )
+            //$(e.target).closest('.btn-group').children('.dropdown-toggle').dropdown('toggle');
+
+            $('#myModalContent').load(this.href, function () {
+                $('#myModal').modal({
+                    /*backdrop: 'static',*/
+                    keyboard: true
+                }, 'show');
+                bindFormContact(this);
+            });
+            return false;
+        });
+    });
+
+    function bindFormContact(dialog) {
+        $('form', dialog).submit(function () {
+            $.ajax({
+                url: this.action,
+                type: this.method,
+                data: $(this).serialize(),
+                success: function (result) {
+                    if (result.success) {
+                        $('#myModal').modal('hide');
+                        $('#replacetarget1').load(result.url); //  Load data from the server and place the returned HTML into the matched element
+                    } else {
+                        $('#myModalContent').html(result);
+                        bindFormContact(dialog);
+                    }
+                }
+            });
+            return false;
+        });
+    }
+</script>

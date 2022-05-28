@@ -1,0 +1,35 @@
+﻿@model EInventory.Models.FinalItemConsumption
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.ID)
+
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Are you sure to delete this consumption detail?</h4>
+    </div>
+    <div class="modal-body">
+
+        <div class="display-label">
+            @Html.DisplayNameFor(model => model.RowItemName)
+        </div>
+        <div class="display-field">
+            @Html.DisplayFor(model => model.RowItemName)
+        </div>
+
+        <div class="display-label">
+            @Html.DisplayNameFor(model => model.Qty)
+        </div>
+        <div class="display-field">
+            @Html.DisplayFor(model => model.Qty)
+        </div>
+    </div>
+
+
+    <div class="modal-footer">
+        <button class="btn" type="button" data-dismiss="modal">No</button>
+        <input class="btn btn-danger" type="submit" value="Yes" />
+    </div>
+}

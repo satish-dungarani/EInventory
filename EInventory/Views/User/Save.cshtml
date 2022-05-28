@@ -1,0 +1,187 @@
+﻿@model EInventory.Models.UserModels
+@using EInventory.Helpers
+
+@{
+    ViewBag.Title = "Save";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- InputMask -->
+<script src="~/Scripts/plugins/input-mask/jquery.inputmask.js"></script>
+<script src="~/Scripts/plugins/input-mask/jquery.inputmask.date.extensions.js"></script>
+<script src="~/Scripts/plugins/input-mask/jquery.inputmask.extensions.js"></script>
+<!-- Select2 -->
+<script src="~/Scripts/plugins/select2/select2.full.min.js"></script>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    @if (Model.UserID > 0)
+                    {
+                        <h3 class="box-title">Edit Existing User</h3>
+                    }
+                    else
+                    {
+                        <h3 class="box-title">Add New User</h3>
+                    }
+                </div><!-- /.box-header -->
+                <!-- form start -->
+                @using (Html.BeginForm("Save", "User", FormMethod.Post, new { @class = "form-horizontal", enctype = "multipart/form-data" }))
+                {
+                    <div class="box-body">
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.UserID)
+
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.refCompID_Company, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.DropDownListFor(model => model.refCompID_Company, new SelectList(ViewBag.listCompnies, "CompID", "Name"), new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.refCompID_Company, "", new { @class = "text-danger" })
+                            </div>
+
+                            @Html.LabelFor(model => model.UserName, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(model => model.UserName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+
+                            @Html.LabelFor(model => model.Password, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.PasswordFor(model => model.Password, new { value = Model.Password, @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                            </div>
+
+
+                            @Html.LabelFor(model => model.ConfirmedPassword, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.PasswordFor(model => model.ConfirmedPassword, new { value = Model.Password, @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ConfirmedPassword, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FirstName, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                            </div>
+
+                            @Html.LabelFor(model => model.LastName, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(model => model.LastName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ImageUpload, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(model => model.ImageUpload, new { @class = "form-control", type = "file" })
+                                @Html.ValidationMessageFor(model => model.ImageUpload, "", new { @class = "text-danger" })
+                            </div>
+
+
+                            @Html.LabelFor(model => model.Gender, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.DropDownListFor(model => model.Gender, new SelectList(
+                                                                              new List<Object>{
+                                                                                   new { ID = "M" , text = "Male"  },
+                                                                                   new { ID = "F" , text = "Female" },
+                                                                                   new { ID = "O" , text = "Other"}
+                                                                                },
+                                                                              "ID",
+                                                                              "text"), new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DOB, new { @class = "col-sm-2 control-label" })
+
+
+                            <div class="col-sm-4">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    @Html.TextBoxFor(model => model.DOB, new { @class = "form-control", @data_inputmask = @Html.Raw(@"'alias' : 'dd/mm/yyyy' "), @data_mask = "" })
+                                </div><!-- /.input group -->
+                                @Html.ValidationMessageFor(model => model.DOB, "", new { @class = "text-danger" })
+                            </div>
+
+                            @Html.LabelFor(model => model.MobileNo, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(model => model.MobileNo, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.MobileNo, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.EmaiAddress, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(model => model.EmaiAddress, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.EmaiAddress, "", new { @class = "text-danger" })
+                            </div>
+
+                            @Html.LabelFor(model => model.IsActive, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.CheckBoxFor(model => model.IsActive, new { @class = "check" })
+                                @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.RoleID, new { @class = "col-sm-2 control-label" })
+                            <div class="col-sm-4">
+                                @Html.DropDownListFor(model => model.RoleID, new SelectList(ViewBag.listRoles, "RoleID", "RoleName"), new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.RoleID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="box-footer">
+
+                            <a href="@Url.Action("Index")" class="btn btn-default">Cancel</a>
+
+                            @if (Model.UserID > 0)
+                            {
+                                <button type="submit" class="btn btn-info pull-right"> Update </button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-info pull-right"> Save </button>
+                            }
+                        </div>
+
+                    </div>
+                }
+
+
+            </div><!-- /.box-body -->
+        </div><!-- /.box -->
+    </div><!-- /.col -->
+</section>.
+
+<script>
+    $(function () {
+        //Initialize Select2 Elements
+        $(".select2").select2();
+
+        //Datemask dd/mm/yyyy
+        $("#datemask").inputmask("dd/mm/yyyy", { "placeholder": "dd/mm/yyyy" });
+
+        //Money Euro
+
+        $("[data-mask]").inputmask();
+
+    });
+</script>

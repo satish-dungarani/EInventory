@@ -1,0 +1,25 @@
+﻿@model EInventory.Models.RoleModels
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Are you sure to delete this Role Value ?</h4>
+    </div>
+    <div class="modal-body">
+
+        <div class="display-label">
+            @Html.DisplayNameFor(model => model.RoleName)
+        </div>
+        <div class="display-field">
+            @Html.DisplayFor(model => model.RoleName)
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn" type="button" data-dismiss="modal">No</button>
+        <input class="btn btn-danger" type="submit" value="Yes" />
+    </div>
+}

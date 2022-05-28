@@ -1,0 +1,150 @@
+﻿@model IEnumerable<EInventory.Models.RoleModels>
+@using EInventory.Models
+@using EInventory.Helpers
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+
+                    <h3 class="box-title">Role List</h3>
+                    @*@Html.NoEncodeActionLink("<span class=''></span>", "Add", "Add", "Role", htmlAttributes: new { id = "contact", data_modal = "", @class = "btn btn-primary pull-right" })*@
+                    <a class="btn btn-primary pull-right" data-modal="" href="/Role/Add/"><span class="">Add</span></a>
+                </div><!-- /.box-header -->
+
+                <div class="box-body">
+
+
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>
+                                    RoleName
+                                </th>
+                                <th>
+                                    Action
+                                </th>
+
+                            </tr>
+                        </thead>
+
+                    </table>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+</section>
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+<script type="">
+
+    $(function () {
+        $('#example1').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "processing": true,
+            "serverSide": false,
+            "ajax": '@Url.Action("LoadRolesAjaxHandler", "Role")',
+            "columns": [
+                            { "data": "RoleName", "width": "90%" }
+                           , {
+                               "aTargets": [1],
+                               "mData": null,
+                               "mRender": function (data, type, full) {
+                                   if (full.IsSystemRole == true)
+                                       return ''
+                                   else
+                                       return '<table><tr><td><a data-modal="" href="/Role/Edit/' + full.RoleID + '" class="btn btn-block btn-info">Edit</a></td><td>&nbsp;&nbsp;</td><td><a class="btn btn-block btn-danger" data-modal="" href="/Role/Delete/' + full.RoleID + '"><span class="">Delete</span></a></td></tr></table>'
+                               }
+                           }
+            ],
+            "fnInitComplete": function () {
+                $(function () {
+                    $.ajaxSetup({ cache: false });
+
+                    $("a[data-modal]").on("click", function (e) {
+                        // hide dropdown if any (this is used wehen invoking modal from link in bootstrap dropdown )
+                        //$(e.target).closest('.btn-group').children('.dropdown-toggle').dropdown('toggle');
+
+                        $('#myModalContent').load(this.href, function () {
+                            $('#myModal').modal({
+                                /*backdrop: 'static',*/
+                                keyboard: true
+                            }, 'show');
+
+                            bindFormSatutory(this);
+                        });
+                        return false;
+                    });
+                });
+            }
+
+        });
+    });
+
+
+
+    $(function () {
+        $.ajaxSetup({ cache: false });
+
+        $("a[data-modal]").on("click", function (e) {
+            // hide dropdown if any (this is used wehen invoking modal from link in bootstrap dropdown )
+            //$(e.target).closest('.btn-group').children('.dropdown-toggle').dropdown('toggle');
+
+            $('#myModalContent').load(this.href, function () {
+                $('#myModal').modal({
+                    /*backdrop: 'static',*/
+                    keyboard: true
+                }, 'show');
+
+                bindFormSatutory(this);
+            });
+            return false;
+        });
+    });
+
+
+    function bindFormSatutory(dialog) {
+        $('form', dialog).submit(function () {
+            $.ajax({
+                url: this.action,
+                type: this.method,
+                data: $(this).serialize(),
+                success: function (result) {
+                    if (result.success) {
+                        $('#myModal').modal('hide');
+                        //contentBodyDiv
+                        //$('#contentBodyDiv').load(result.url);
+                        $(location).attr("href", result.url);
+
+                        //  Load data from the server and place the returned HTML into the matched element
+                    } else {
+                        $('#myModalContent').html(result);
+                        bindFormSatutory(dialog);
+                    }
+                }
+            });
+            return false;
+        });
+    }
+
+
+</script>

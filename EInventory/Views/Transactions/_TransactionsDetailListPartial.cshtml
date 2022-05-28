@@ -1,0 +1,237 @@
+﻿@using EInventory.Models
+@model TransactionModels
+
+@*<div class="row">
+    <div class="col-xs-10">
+        <div class="box">*@
+<div style="overflow-y:scroll; height:335px">
+    <div class="col-lg-12">
+
+        @Html.Hidden("ItemListCount", @Model.listTransactionItem.Count - 1)
+        <table class="table table-bordered" id="tblitemlist">
+            @*<tr style="background-color: #3c8dbc; color:white">
+                    <th colspan="5">
+                        Item List
+                    </th>
+                </tr>*@
+            <thead>
+                <tr style="background-color: #3c8dbc; color:white ">
+                    <th>
+                        Item
+                    </th>
+                    <th>
+                        Qty
+                    </th>
+                    <th>
+                        Rate
+                    </th>
+                    <th>
+                        Amount
+                    </th>
+                    <th>
+                        Action
+                    </th>
+                </tr>
+            </thead>
+
+
+            <tbody>
+                @for (int i = 0; i < Model.listTransactionItem.Count; i++)
+                {
+                    <tr id="@i">
+                        <td>
+                            @Html.DropDownListFor(model => Model.listTransactionItem[i].refItemID_ItemMas, new SelectList((IEnumerable<SelectListItem>)ViewData["ItemList"], "Value", "Text", Model.listTransactionItem[i].refItemID_ItemMas), "----Select Item----", new { @class = "form-control" })
+                        </td>
+                        <td align="right">
+                            @Html.TextBoxFor(model => Model.listTransactionItem[i].TranQty, new { @class = "form-control" })
+                        </td>
+                        <td align="right">
+                            @Html.TextBoxFor(model => Model.listTransactionItem[i].TranRate, new { @class = "form-control" })
+                        </td>
+                        <td align="right">
+                            @Html.TextBoxFor(model => Model.listTransactionItem[i].TranAmount, new { @class = "form-control", @readonly = true })
+                        </td>
+                        <td>
+                            @*<button type="submit" name="btnRemove" id="btnRemove" class="btn btn-danger" value="Remove @i"></button>*@
+
+                            <input type="submit" name="btnSubmit" id="btnSubmit" class="btn btn-danger" value="Remove" onclick="return SetIdBeforeCall(@i);" />
+                            <input type="hidden" name="RowId" id="RowId" />
+                            @Html.HiddenFor(model => Model.listTransactionItem[i].refID_Company)
+                            @Html.HiddenFor(model => Model.listTransactionItem[i].refMachineID_MachineMas)
+                            @Html.HiddenFor(model => Model.listTransactionItem[i].refPurchase_ID)
+                            @Html.HiddenFor(model => Model.listTransactionItem[i].refTranID_TranMas)
+                            @Html.HiddenFor(model => Model.listTransactionItem[i].TIID)
+                            @Html.HiddenFor(model => Model.listTransactionItem[i].SrNo)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div><!-- /.box-body -->
+</div>
+
+<input type="submit" name="btnSubmit" id="btnSubmit" class="btn btn-primary" value="Add" />
+
+@*</div><!-- /.box -->
+        </div><!-- /.col -->
+    </div>*@
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        debugger;
+
+        $("#tblitemlist tr td input").keyup(function (e) {
+            //debugger;
+            //validation for only nnumeric value allow
+            var _TextName = this.name.substring(this.name.lastIndexOf(".") + 1, this.name.length).toUpperCase();
+            if (_TextName == "TRANQTY" || _TextName == "TRANRATE") {
+                
+                if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 96 && e.keyCode <= 105) || e.keyCode == 46 || e.keyCode == 144 || e.keyCode == 8 || e.keyCode == 110
+                    || e.keyCode == 39 || (e.keyCode >= 35 && e.keyCode <= 37) || e.keyCode == 16 || e.keyCode == 17 || e.keyCode == 9)
+                { }
+                else {
+                    $("#" + this.id).val('0');
+                    $("#" + this.id).focus();
+                    toastr["warning"]('only numeric value allow for this field!');
+                    //toastr["warning"](+ 'only allow numeric value!')
+                }
+            }
+        });
+
+        //code for calculate amount and less than 0 validation
+        $("#tblitemlist tr td input").on('focusout', function () {
+            //debugger;
+
+            var _RowId = this.closest('tr').id;
+            var _TextName = this.name.substring(this.name.lastIndexOf(".") + 1, this.name.length).toUpperCase();
+
+            if (_TextName == "TRANQTY" || _TextName == "TRANRATE") {
+
+                //if ($("#" + this.id).val() <= 0) {
+                //    toastr["warning"](_TextName + ' Can not enter less then Zero.');
+                //    $("#" + this.id).focus();
+                //    return false;
+                //}
+                if ($("#listTransactionItem_" + _RowId + "__TranQty") != undefined && $("#listTransactionItem_" + _RowId + "__TranRate") != undefined) {
+                    if ($("#listTransactionItem_" + _RowId + "__TranQty").val() != "" && $("#listTransactionItem_" + _RowId + "__TranRate").val() != "") {
+                        var Qty = $("#listTransactionItem_" + _RowId + "__TranQty").val();
+                        var Rate = $("#listTransactionItem_" + _RowId + "__TranRate").val();
+                        $("#listTransactionItem_" + _RowId + "__TranAmount").val(Qty * Rate);
+                    }
+                }
+            }
+
+
+            //if ($("#listTransactionItem_" + _RowId + "__TranQty").val() <= 0) {
+            //    alert('Qty Can not enter less then Zero.');
+            //    $("#listTransactionItem_" + _RowId + "__TranQty").focus();
+            //    return false;
+            //}
+            //if ($("#listTransactionItem_" + _RowId + "__TranRate").val() <= 0) {
+            //    alert('Rate Can not enter less then Zero.');
+            //    $("#listTransactionItem_" + _RowId + "__TranRate").focus();
+            //    return false;;
+            //}
+
+            //if (($("#listTransactionItem_" + _RowId + "__TranQty").val() != "" || $("#listTransactionItem_" + _RowId + "__TranQty") != undefined) && ($("#listTransactionItem_" + _RowId + "__TranRate").val() != "" || $("#listTransactionItem_" + _RowId + "__TranRate") != undefined)) {
+            //    var Qty = $("#listTransactionItem_" + _RowId + "__TranQty").val();
+            //    var Rate = $("#listTransactionItem_" + _RowId + "__TranRate").val();
+            //    $("#listTransactionItem_" + _RowId + "__TranAmount").val(Qty * Rate);
+            //}
+
+        });
+
+
+
+        //var _Counter = $("#ItemListCount").val()
+        //$("#listTransactionItem_" + _Counter + "__TranQty").focus();
+
+
+        //$("#tblitemlist").on('click', '#btnRemove', function () {
+        //    debugger;
+        //    $(this).closest('tr').remove();
+        //});
+
+        @*$("#btnRemove").on("click", function () {
+            debugger;
+
+            $("#tblitemlist").closest('tr').remove();
+        });
+
+        $("#btnAdd").on("click", function (_RowCount) {
+            debugger;
+
+            $("#tblitemlist > tbody:last").append("<tr id=" + _RowCount + "><td>@Html.DropDownList("refItemID_ItemMas", new SelectList((IEnumerable<SelectListItem>)ViewBag.ItemList, "Value", "Text"), "----Select Item----", new { @class = "form-control" })</td><td><input class=\"form-control\" data-val=\"true\" data-val-number=\"The field TranQty must be a number.\" name=[" + _RowCount + "].TranQty\" type=\"text\" value=\"\"></td><td><input class=\"form-control\" data-val=\"true\" data-val-number=\"The field TranRate must be a number.\" name=[" + _RowCount + "].TranRate\" type=\"text\" value=\"\"></td><td><button type=\"button\" name=\"btnRemove\" id=\"btnRemoveRow\" class=\"btn btn-danger\"  onclick=\"AddOrRemoveRow(" + _RowCount + ");\">Remove</button></td></tr>");
+        });*@
+
+    });
+
+
+    @*function AddRow(_RowCount) {
+        debugger;
+
+        var _TableRow = "<tr id=" + _RowCount + "><td>@Html.DropDownList("\"refItemID_ItemMas\"", new SelectList((IEnumerable<SelectListItem>)ViewBag.ItemList, "\"Value\"", "\"Text\""), "\"----Select Item----\"", new { @class = "\"form-control\"" })</td><td><input class=\"form-control\" data-val=\"true\" data-val-number=\"The field TranQty must be a number.\" name=[" + _RowCount + "].TranQty\" type=\"text\" value=\"\"></td><td><input class=\"form-control\" data-val=\"true\" data-val-number=\"The field TranRate must be a number.\" name=[" + _RowCount + "].TranRate\" type=\"text\" value=\"\"></td><td><button type=\"button\" name=\"btnRemove\" id=\"btnRemoveRow\" class=\"btn btn-danger\"  onclick=\"AddOrRemoveRow(" + _RowCount + ");\">Remove</button></td></tr>";
+        $("#tblitemlist > tbody:last").append(@Html.Raw(_TableRow);
+    }
+
+    function RemoveRow() {
+        debugger;
+        $("#tblitemlist").closest('tr').remove();
+    }*@
+
+
+    //function CallSuccess(response) {
+    //    debugger;
+    //    $("#ItemList").html("");
+    //    $("#ItemList").html(response);
+    //}
+
+    //function CallFailure() {
+    //    debugger;
+    //    $("#ItemList").html("");
+
+    //}
+
+    //function RemoveRow() {
+    //    debugger;
+    //    $("#" + $("#tblitemlist tr").id).remove();
+    //}
+
+    @*function AddNewRow() {
+        $("#tblitemlist > tbody:last").append("<tr id="+localStorage.getItem("tableRowCount")+"><td>@Html.DropDownList("refItemID_ItemMas", new SelectList((IEnumerable<SelectListItem>)ViewBag.ItemList, "Value", "Text"), "----Select Item----", new { @class = "form-control" })</td><td><input class=\"form-control\" data-val=\"true\" data-val-number=\"The field TranQty must be a number.\" name=["+localStorage.getItem("")+"].TranQty\" type=\"text\" value=\"\"></td><td><input class=\"form-control\" data-val=\"true\" data-val-number=\"The field TranRate must be a number.\" name=["+localStorage.getItem("")+"].TranRate\" type=\"text\" value=\"\"></td><td><button type=\"button\" name=\"btnRemove\" id=\"btnRemoveRow\" class=\"btn btn-danger\">Remove</button></td></tr>");
+    }*@
+
+
+
+    @*function AddOrRemoveRow(_Rowid) {
+        debugger;
+
+        if (_Rowid == -1) {
+            $("#tblitemlist > tbody:last").append("<tr id=" + _RowCount + "><td>@Html.DropDownList("refItemID_ItemMas", new SelectList((IEnumerable<SelectListItem>)ViewBag.ItemList, "Value", "Text"), "----Select Item----", new { @class = "form-control" })</td><td><input class=\"form-control\" data-val=\"true\" data-val-number=\"The field TranQty must be a number.\" name=[" + _RowCount + "].TranQty\" type=\"text\" value=\"\"></td><td><input class=\"form-control\" data-val=\"true\" data-val-number=\"The field TranRate must be a number.\" name=[" + _RowCount + "].TranRate\" type=\"text\" value=\"\"></td><td><button type=\"button\" name=\"btnRemove\" id=\"btnRemoveRow\" class=\"btn btn-danger\"  onclick=\"AddOrRemoveRow(" + _RowCount + ");\">Remove</button></td></tr>");
+        }
+        else {
+            $("#tblitemlist").closest('tr').remove();
+
+            $.ajax({
+                    type: "get",
+                    dataType: "json",
+                    cache: false,
+                    url: '@Url.Action("SetDataInItemDetail","Transactions")',
+                    data: { _objParam : '@Html.Raw(Json.Encode(Model))'},
+                    beforeSend: function () {
+
+                    },
+                    success: function (response) {
+                        debugger;
+                        $("#ItemList").html("");
+                        $("#ItemList").html(response);
+                    },
+                    error: function () {
+                        debugger;
+                        $("#ItemList").html("");
+                    }
+                });
+        }
+
+    }*@
+</script>
